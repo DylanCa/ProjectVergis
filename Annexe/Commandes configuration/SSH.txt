@@ -1,0 +1,10 @@
+conf t
+username paul password paul
+hostname S2O
+ip domain-name vergis.fr
+crypto key generate rsa
+1024
+line vty 0 4
+transport input ssh
+login local
+exit

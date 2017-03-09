@@ -1,0 +1,281 @@
+NAT :
+
+Routeur Internet
+
+interface 1oopback 0
+ip address 8.8.8.8 255.255.255.255
+exit
+
+interface s2/0
+no shutdown
+ip address 80.79.100.1 255.255.255.252
+exit
+
+ip route 201.49.10.16 255.255.255.240 serial 2/0
+
+Routeur
+interface s0/0
+ip address 80.79.100.2 255.255.255.252
+no shut 
+
+ip route 0.0.0.0 0.0.0.0 serial2/0
+
+ACL :
+
+Routeur
+
+access-list 130 permit ip any 192.168.0.0 0.0.1.255
+ip nat pool POOL-NAT-LAN 201.49.10.17 201.49.10.30 netmask 255.255.255.240
+ip nat inside source list 1 pool POOL-NAT-LAN overload
+access-list 130 deny ip any any
+interface s2/0
+ip access-group 130 IN
+exit
+
+Serveur tftp info 
+
+access-list 100 permit udp 192.168.1.208 0.0.0.15 any eq tftp
+access-list 100 permit udp 192.168.1.128 0.0.0.21 any eq tftp
+access-list 100 permit udp 192.168.2.0 0.0.0.15 any eq tftp
+access-list 100 deny ip any any
+interface fa0/8
+ip access-group 131 IN
+exit
+
+Serveur tftp recherche
+
+access-list 101 permit udp 192.168.0.0 any 0.0.0.255 eq tftp
+access-list 101 deny ip any any
+interface fa0/5
+ip access-group 101 IN
+exit
+
+VLAN defaut :
+
+access-list 102 permit ip any 192.168.1.160 0.0.0.15
+access-list 102 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 102 deny ip any 192.168.2.32 0.0.0.7
+access-list 102 deny ip any 192.168.1.64 0.0.0.21
+access-list 102 deny ip any 192.168.1.96 0.0.0.21
+access-list 102 deny ip any 192.168.1.240 0.0.0.15
+access-list 102 deny ip any 192.168.2.16 0.0.0.15
+access-list 102 deny ip any 192.168.1.176 0.0.0.15
+access-list 102 deny ip any 192.168.1.224 0.0.0.15
+access-list 102 deny ip any 192.168.0.0 0.0.0.255
+access-list 102 deny ip any 192.168.1.208 0.0.0.15
+access-list 102 deny ip any 192.168.1.128 0.0.0.21
+access-list 102 deny ip any 192.168.2.0 0.0.0.15
+access-list 102 permit ip 192.168.1.160 0.0.0.15 any
+access-list 102 deny ip any any
+interface fa0/0.2
+ip access-group 102 IN
+
+access-list 104 permit ip any 192.168.2.32 0.0.0.7
+access-list 104 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 104 deny ip any 192.168.1.64 0.0.0.21
+access-list 104 deny ip any 192.168.1.96 0.0.0.21
+access-list 104 deny ip any 192.168.1.240 0.0.0.15
+access-list 104 deny ip any 192.168.2.16 0.0.0.15
+access-list 104 deny ip any 192.168.1.176 0.0.0.15
+access-list 104 deny ip any 192.168.1.224 0.0.0.15
+access-list 104 deny ip any 192.168.0.0 0.0.0.255
+access-list 104 deny ip any 192.168.1.208 0.0.0.15
+access-list 104 deny ip any 192.168.1.128 0.0.0.21
+access-list 104 deny ip any 192.168.2.0 0.0.0.15
+access-list 104 permit ip 192.168.2.32 0.0.0.7 any
+access-list 104 deny ip any any
+interface fa0/0.4
+ip access-group 104 IN
+
+access-list 105 permit ip any 192.168.1.64 0.0.0.21
+access-list 105 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 105 deny ip any 192.168.2.32 0.0.0.7
+access-list 105 deny ip any 192.168.1.96 0.0.0.21
+access-list 105 deny ip any 192.168.1.240 0.0.0.15
+access-list 105 deny ip any 192.168.2.16 0.0.0.15
+access-list 105 deny ip any 192.168.1.176 0.0.0.15
+access-list 105 deny ip any 192.168.1.224 0.0.0.15
+access-list 105 deny ip any 192.168.0.0 0.0.0.255
+access-list 105 deny ip any 192.168.1.208 0.0.0.15
+access-list 105 deny ip any 192.168.1.128 0.0.0.21
+access-list 105 deny ip any 192.168.2.0 0.0.0.15
+access-list 105 permit ip 192.168.1.64 0.0.0.21 any
+access-list 105 deny ip any any
+interface fa0/0.5
+ip access-group 105 IN
+
+access-list 106 permit ip any 192.168.1.96 0.0.0.21
+access-list 106 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 106 deny ip any 192.168.2.32 0.0.0.7
+access-list 106 deny ip any 192.168.1.64 0.0.0.21
+access-list 106 deny ip any 192.168.1.240 0.0.0.15
+access-list 106 deny ip any 192.168.2.16 0.0.0.15
+access-list 106 deny ip any 192.168.1.176 0.0.0.15
+access-list 106 deny ip any 192.168.1.224 0.0.0.15
+access-list 106 deny ip any 192.168.0.0 0.0.0.255
+access-list 106 deny ip any 192.168.1.208 0.0.0.15
+access-list 106 deny ip any 192.168.1.128 0.0.0.21
+access-list 106 deny ip any 192.168.2.0 0.0.0.15
+access-list 106 permit ip 192.168.1.96 0.0.0.21 any
+access-list 106 deny ip any any
+interface fa0/0.6
+ip access-group 106 IN
+
+access-list 107 permit ip any 192.168.1.240 0.0.0.15
+access-list 107 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 107 deny ip any 192.168.2.32 0.0.0.7
+access-list 107 deny ip any 192.168.1.64 0.0.0.21
+access-list 107 deny ip any 192.168.1.96 0.0.0.21
+access-list 107 deny ip any 192.168.2.16 0.0.0.15
+access-list 107 deny ip any 192.168.1.176 0.0.0.15
+access-list 107 deny ip any 192.168.1.224 0.0.0.15
+access-list 107 deny ip any 192.168.0.0 0.0.0.255
+access-list 107 deny ip any 192.168.1.208 0.0.0.15
+access-list 107 deny ip any 192.168.1.128 0.0.0.21
+access-list 107 deny ip any 192.168.2.0 0.0.0.15
+access-list 107 permit ip 192.168.1.240 0.0.0.15 any
+access-list 107 deny ip any any
+interface fa0/0.7
+ip access-group 107 IN
+
+access-list 108 permit ip any 192.168.2.16 0.0.0.15
+access-list 108 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 108 deny ip any 192.168.2.32 0.0.0.7
+access-list 108 deny ip any 192.168.1.64 0.0.0.21
+access-list 108 deny ip any 192.168.1.96 0.0.0.21
+access-list 108 deny ip any 192.168.1.240 0.0.0.15
+access-list 108 deny ip any 192.168.1.176 0.0.0.15
+access-list 108 deny ip any 192.168.1.224 0.0.0.15
+access-list 108 deny ip any 192.168.0.0 0.0.0.255
+access-list 108 deny ip any 192.168.1.208 0.0.0.15
+access-list 108 deny ip any 192.168.1.128 0.0.0.21
+access-list 108 deny ip any 192.168.2.0 0.0.0.15
+access-list 108 permit ip 192.168.2.16 0.0.0.15 any
+access-list 108 deny ip any any
+interface fa0/0.8
+ip access-group 108 IN
+
+access-list 109 permit ip any 192.168.1.176 0.0.0.15
+access-list 109 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 109 deny ip any 192.168.2.32 0.0.0.7
+access-list 109 deny ip any 192.168.1.64 0.0.0.21
+access-list 109 deny ip any 192.168.1.96 0.0.0.21
+access-list 109 deny ip any 192.168.1.240 0.0.0.15
+access-list 109 deny ip any 192.168.2.16 0.0.0.15
+access-list 109 deny ip any 192.168.1.176 0.0.0.15
+access-list 109 deny ip any 192.168.1.224 0.0.0.15
+access-list 109 deny ip any 192.168.0.0 0.0.0.255
+access-list 109 deny ip any 192.168.1.208 0.0.0.15
+access-list 109 deny ip any 192.168.1.128 0.0.0.21
+access-list 109 deny ip any 192.168.2.0 0.0.0.15
+access-list 109 permit ip 192.168.1.176 0.0.0.15 any
+access-list 109 deny ip any any
+interface fa0/0.9
+ip access-group 109 IN
+
+access-list 110 permit ip any 192.168.1.224 0.0.0.15
+access-list 110 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 110 deny ip any 192.168.2.32 0.0.0.7
+access-list 110 deny ip any 192.168.1.64 0.0.0.21
+access-list 110 deny ip any 192.168.1.96 0.0.0.21
+access-list 110 deny ip any 192.168.1.240 0.0.0.15
+access-list 110 deny ip any 192.168.2.16 0.0.0.15
+access-list 110 deny ip any 192.168.1.176 0.0.0.15
+access-list 110 deny ip any 192.168.1.224 0.0.0.15
+access-list 110 deny ip any 192.168.0.0 0.0.0.255
+access-list 110 deny ip any 192.168.1.208 0.0.0.15
+access-list 110 deny ip any 192.168.1.128 0.0.0.21
+access-list 110 deny ip any 192.168.2.0 0.0.0.15
+access-list 110 permit ip 192.168.1.224 0.0.0.15 any
+access-list 110 deny ip any any
+interface fa0/0.10
+ip access-group 110 IN
+
+access-list 113 permit ip any 192.168.0.0 0.0.0.255
+access-list 113 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 113 deny ip any 192.168.2.32 0.0.0.7
+access-list 113 deny ip any 192.168.1.64 0.0.0.21
+access-list 113 deny ip any 192.168.1.96 0.0.0.21
+access-list 113 deny ip any 192.168.1.240 0.0.0.15
+access-list 113 deny ip any 192.168.2.16 0.0.0.15
+access-list 113 deny ip any 192.168.1.176 0.0.0.15
+access-list 113 deny ip any 192.168.1.224 0.0.0.15
+access-list 113 deny ip any 192.168.0.0 0.0.0.255
+access-list 113 deny ip any 192.168.1.208 0.0.0.15
+access-list 113 deny ip any 192.168.1.128 0.0.0.21
+access-list 113 deny ip any 192.168.2.0 0.0.0.15
+access-list 113 permit ip 192.168.0.0 0.0.0.255 any
+access-list 113 deny ip any any
+interface fa0/0.13
+ip access-group 113 IN
+
+
+access-list 103 permit ip any 192.168.1.208 0.0.0.15
+access-list 103 permit ip any 192.168.1.128 0.0.0.21
+access-list 103 permit ip any 192.168.2.0 0.0.0.15
+access-list 103 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 103 deny ip any 192.168.2.32 0.0.0.7
+access-list 103 deny ip any 192.168.1.64 0.0.0.21
+access-list 103 deny ip any 192.168.1.96 0.0.0.21
+access-list 103 deny ip any 192.168.1.240 0.0.0.15
+access-list 103 deny ip any 192.168.2.16 0.0.0.15
+access-list 103 deny ip any 192.168.1.176 0.0.0.15
+access-list 103 deny ip any 192.168.1.224 0.0.0.15
+access-list 103 deny ip any 192.168.0.0 0.0.0.255
+access-list 103 deny ip any 192.168.1.208 0.0.0.15
+access-list 103 deny ip any 192.168.1.128 0.0.0.21
+access-list 103 deny ip any 192.168.2.0 0.0.0.15
+access-list 103 permit ip 192.168.1.208 0.0.0.15 any
+access-list 103 deny ip any any
+interface fa0/0.3
+ip access-group 102 IN
+
+access-list 111 permit ip any 192.168.1.208 0.0.0.15
+access-list 111 permit ip any 192.168.1.128 0.0.0.21
+access-list 111 permit ip any 192.168.2.0 0.0.0.15
+access-list 111 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 111 deny ip any 192.168.2.32 0.0.0.7
+access-list 111 deny ip any 192.168.1.64 0.0.0.21
+access-list 111 deny ip any 192.168.1.96 0.0.0.21
+access-list 111 deny ip any 192.168.1.240 0.0.0.15
+access-list 111 deny ip any 192.168.2.16 0.0.0.15
+access-list 111 deny ip any 192.168.1.176 0.0.0.15
+access-list 111 deny ip any 192.168.1.224 0.0.0.15
+access-list 111 deny ip any 192.168.0.0 0.0.0.255
+access-list 111 deny ip any 192.168.1.208 0.0.0.15
+access-list 111 deny ip any 192.168.1.128 0.0.0.21
+access-list 111 permit ip 192.168.1.128 0.0.0.21 any
+access-list 111 deny ip any any
+interface fa0/0.11
+ip access-group 111 IN
+
+access-list 112 permit ip any 192.168.1.208 0.0.0.15
+access-list 112 permit ip any 192.168.1.128 0.0.0.21
+access-list 112 permit ip any 192.168.2.0 0.0.0.15
+access-list 112 permit ip any 192.168.1.192 0.0.0.15
+access-list 102 permit udp host 0.0.0.0 eq bootpc host 255.255.255.255 eq bootps
+access-list 112 deny ip any 192.168.2.32 0.0.0.7
+access-list 112 deny ip any 192.168.1.64 0.0.0.21
+access-list 112 deny ip any 192.168.1.96 0.0.0.21
+access-list 112 deny ip any 192.168.1.240 0.0.0.15
+access-list 112 deny ip any 192.168.2.16 0.0.0.15
+access-list 112 deny ip any 192.168.1.176 0.0.0.15
+access-list 112 deny ip any 192.168.1.224 0.0.0.15
+access-list 112 deny ip any 192.168.0.0 0.0.0.255
+access-list 112 deny ip any 192.168.1.208 0.0.0.15
+access-list 112 deny ip any 192.168.1.128 0.0.0.21
+access-list 112 permit ip 192.168.2.0 0.0.0.15 any
+access-list 112 deny ip any any
+interface fa0/0.12
+ip access-group 112 IN
